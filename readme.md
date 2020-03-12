@@ -1,4 +1,4 @@
 # MovieBuff 
-## A Game by Mllrb
+## A Game by MllrB
 
-MovieBuff is a game powered by OMDB that takes data from the OMDB API and presents it in a multiple choice game format.
+MovieBuff is a game powered by TMDB that takes data from the TMDB API and presents it in a multiple choice game format.

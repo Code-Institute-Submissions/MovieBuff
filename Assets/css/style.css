@@ -2,6 +2,40 @@
 
 /* -------------------------------- General Styles -------------------------------- */
 
+body {
+    background-color: rgb(8, 28, 36);
+    display: flex;
+    padding: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.special-elite-font {
+    font-family: 'Special Elite', sans-serif;
+}
+
+.white {
+    color: rgb(174, 203, 214);
+}
+
+.game-wrapper {
+    min-width: 95vw;
+    min-height: 95vh;
+    max-height: 95vh;
+    max-width: 95vw;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tmdb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 /* -------------------------------- 3 of a Kind Styles -------------------------------- */
 
