@@ -1,4 +1,12 @@
+//Movie Buff Game by MllrB
+
+//------------------------------Game Variables------------------------------------
+
 const gameData = [];
+var currentGameSet = [];
+var correctAnswer;
+var goNumber;
+var correctAnswersGiven = [];
 
 function MovieData(filmID, title, poster, blurb) {
     this.movieID = filmID;
@@ -14,6 +22,10 @@ function ActorData(num, name, charName, profilePic) {
     this.characterName = charName;
     this.actorImage = profilePic;
 }
+
+
+//------------------------------Game Loading Functions------------------------------------
+
 
 async function fetchTopRatedMovies(pageNumber) {
 
@@ -69,8 +81,6 @@ async function loadGame() {
         });
     });
 
-
-
     console.log(gameData);
 
     setTimeout(() => {
@@ -79,7 +89,173 @@ async function loadGame() {
                                                             </div>
                                                             <div class="col-12 tmdb">
                                                                 <p class="special-elite-font white">powered by The Movie DB</p>
-                                                            </div>`
-    }, 3000);
+                                                            </div>`;
 
+        setTimeout(() => {
+            chooseGame();
+        }, 3000);
+    }, 2000);
+
+}
+
+function chooseGame() {
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
+                                                                    <button onclick="chooseGameMode('ThreeOfAKind')" class="btn btn-success special-elite-font">3 of a Kind</button>
+                                                                    <button onclick="chooseGameMode('RolePlay')" class="btn btn-success special-elite-font">Role Play</button>
+                                                                </div>`;
+}
+
+function chooseGameMode(gameType) {
+
+    console.log(gameType);
+    currentGameSet = [...gameData];
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
+                                                            <button onclick="set${gameType}Board('casual', true, false)" class="btn btn-success special-elite-font">Casual</button>
+                                                            <button onclick="set${gameType}Board('survival', true, false)" class="btn btn-success special-elite-font">Survival</button>
+                                                        </div>`;
+}
+
+//---------------------------------------------GAME MECHANICS---------------------------------------------
+//------------------ shuffle - randomInt - check answer - game counter - draw movies row -----------------
+
+
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
+}
+
+function shuffleArray(arrayToShuffle) {
+    for (let i = arrayToShuffle.length - 1; i > 0; --i) {
+        let j = Math.floor(Math.random() * (i + 1));
+        let temp = arrayToShuffle[i];
+        arrayToShuffle[i] = arrayToShuffle[j];
+        arrayToShuffle[j] = temp;
+    }
+    return arrayToShuffle;
+}
+
+function checkAnswer(clickedMovie, correctAnswer, isLastGo, whichGame, gameMode) {
+
+    if (clickedMovie.id == correctAnswer.movieID) {
+        document.getElementById("gameWindow").innerHTML = "";
+        correctAnswersGiven.push(correctAnswer);
+    }
+
+    if (isLastGo) {
+        alert(`Game Over! you got ${correctAnswersGiven.length} out of 10 correct`);
+
+        currentGameSet = [...gameData];
+        correctAnswersGiven = [];
+        chooseGame();
+    } else if (whichGame == "ThreeOfAKind") {
+        setThreeOfAKindBoard(gameMode, false, false);
+    }
+
+}
+
+function setGameCounter(isFirstRound) {
+    console.log("is it the first round? " + isFirstRound);
+    //set number of goes and decrement each time until 0;
+    if (isFirstRound) {
+        goNumber = 9;
+        console.log("firstRound: goNumber = " + goNumber);
+    } else {
+        goNumber--;
+    }
+
+    //check if this is the last go
+
+    if (goNumber == 0) {
+        return true;
+    } else return false;
+}
+
+function setMovieRow(movies, isLastGo, whichGame, gameMode) {
+    console.log(isLastGo);
+    movies = shuffleArray(movies);
+    document.getElementById("movies-row").innerHTML =
+        `<div id="${movies[0].movieID}" class="col-4 movies movie-1" onclick="checkAnswer(this, correctAnswer, ${isLastGo}, '${whichGame}', '${gameMode}')">
+                <img src="https://image.tmdb.org/t/p/w500/${movies[0].moviePoster}" width=100%>
+            </div>
+            <div id="${movies[1].movieID}" class="col-4 movies" onclick="checkAnswer(this, correctAnswer, ${isLastGo}, '${whichGame}', '${gameMode}')">
+                <img src="https://image.tmdb.org/t/p/w500/${movies[1].moviePoster}" width=100%>
+            </div>
+            <div id="${movies[2].movieID}" class="col-4 movies movie-3" onclick="checkAnswer(this, correctAnswer, ${isLastGo}, '${whichGame}', '${gameMode}')">
+                <img src="https://image.tmdb.org/t/p/w500/${movies[2].moviePoster}" width=100%>
+            </div> `;
+}
+
+function setActorsRow(actors) {
+    var firstActor = $("#actor-1");
+    var secondActor = $("#actor-2");
+    var thirdActor = $("#actor-3");
+
+    var firstActorImg = `https://image.tmdb.org/t/p/w500${actors[0].actorImage}`;
+    var secondActorImg = `https://image.tmdb.org/t/p/w500${actors[1].actorImage}`;
+    var thirdActorImg = `https://image.tmdb.org/t/p/w500${actors[2].actorImage}`;
+
+    document.getElementById("actor-1").innerHTML = `<img src="${firstActorImg}" width=100% class="hidden"><p class="actorName">${actors[0].actorName}</p>`;
+    document.getElementById("actor-2").innerHTML = `<img src="${secondActorImg}" width=100% class="hidden"><p class="actorName">${actors[1].actorName}</p>`;
+    document.getElementById("actor-3").innerHTML = `<img src="${thirdActorImg}" width=100% class="hidden"><p class="actorName">${actors[2].actorName}</p>`;
+
+    firstActor.removeClass("hidden");
+    secondActor.removeClass("hidden");
+    thirdActor.removeClass("hidden");
+}
+//-------------------------------------------------------3 OF A KIND GAME-----------------------------------------------------------
+
+function setThreeOfAKindBoard(gameMode, isFirstRound, isLastGo) {
+
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
+                                                            <div class="row actors-row">
+                                                                <div id="actor-1" class="col-4 actors hidden"></div>
+                                                                <div id="actor-2" class="col-4 actors hidden"></div>
+                                                                <div id="actor-3" class="col-4 actors hidden"></div>
+                                                            </div>
+                                                            <div id="movies-row" class="row movies-row">
+                                                            </div>
+
+                                                        </div>`;
+
+    if (gameMode == "casual") {
+        playThreeOfAKindCasual(isFirstRound, isLastGo);
+    } else if (gameMode == "survival") {
+        playThreeOfAKindSurvival(isFirstRound, isLastGo);
+    }
+}
+
+function playThreeOfAKindCasual(isFirstRound, isLastGo) {
+    console.log("three of a kind casual");
+
+    var actors = [];
+    var movies = [];
+    var chosenMovie;
+
+    currentGameSet = shuffleArray(currentGameSet);
+    chosenMovie = currentGameSet.shift();
+    correctAnswer = chosenMovie;
+
+    //set choice of 3 movies including the correct answer
+    movies[0] = chosenMovie;
+    for (let i = 1; i < 3; i++) {
+        movies[i] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+    }
+    // populate choice of actors for chosen movie
+    for (let i = 0; i < 3; i++) {
+        actors[i] = chosenMovie.castMembers[i];
+    }
+
+    isLastGo = setGameCounter(isFirstRound);
+
+    // set the game board
+
+    setActorsRow(actors);
+
+    setMovieRow(movies, isLastGo, "ThreeOfAKind", "casual");
+
+}
+
+function playThreeOfAKindSurvival(isFirstRound, isLastGo) {
+    console.log("three of a kind survival");
 }
