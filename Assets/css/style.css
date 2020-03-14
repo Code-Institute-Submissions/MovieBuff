@@ -16,18 +16,28 @@ body {
     font-family: 'Special Elite', sans-serif;
 }
 
-.white {
+.light-font {
+    font-family: 'Special Elite', sans-serif;
     color: rgb(174, 203, 214);
+}
+
+.title-wrapper {
+    position: absolute;
+    top: 0;
+    text-align: center;
+    width: 100%;
+    height: 7%;
+    margin: 20px;
 }
 
 .game-window {
     position: absolute;
-    top: 0;
+    /* top: 0; */
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
-    height: 100%;
+    height: 90%;
     margin: 0;
     padding: 0;
 }
@@ -61,6 +71,47 @@ body {
     width: 100px;
     /* background-color: rgb(1, 210, 119);
     color: rgb(8, 28, 36); */
+}
+
+@keyframes incorrect {
+    0% {
+        border-top-color: red;
+    }
+    25% {
+        border-top-color: rgb(121, 248, 121);
+        border-right-color: red;
+    }
+    50% {
+        border-right-color: rgb(121, 248, 121);
+        border-bottom-color: red;
+    }
+    70% {
+        border-bottom-color: rgb(121, 248, 121);
+        border-left-color: red;
+    }
+    85% {
+        border-left-color: rgb(121, 248, 121);
+    }
+}
+
+.incorrect-answer {
+    animation: incorrect 1s ease-in-out 0s 1;
+}
+
+@keyframes correct {
+    0% {
+        border-color: rgb(10, 126, 10);
+    }
+    50% {
+        border-color: rgb(121, 248, 121);
+    }
+    100% {
+        border-color: rgb(10, 126, 10);
+    }
+}
+
+.correct-answer {
+    animation: correct 500ms linear 0s infinite;
 }
 
 
@@ -117,11 +168,25 @@ body {
 .actors {
     position: relative;
     max-width: 25%;
+    padding: 0;
+}
+
+.actor-name {
+    position: absolute;
+    bottom: 0;
+    left: 5px;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 5px;
+    text-align: center;
+    background-color: rgba(8, 28, 36, 0.6);
+    padding-top: 3px;
 }
 
 .movies {
     position: relative;
     max-width: 25%;
+    padding: 0;
 }
 
 #actor-1 {
