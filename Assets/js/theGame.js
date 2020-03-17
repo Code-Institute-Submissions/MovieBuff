@@ -3,20 +3,35 @@
 //------------------------------Game Variables------------------------------------
 
 const gameData = [];
+const mostPopular = [];
 var currentGameSet = [];
-var correctAnswer;
-var goNumber;
-var correctAnswersGiven = [];
 
 const games = [{ name: "ThreeOfAKind", title: "3 of a Kind", description: "You're shown 3 actors and 3 movies<br> Choose the movie that connects the actors" },
     { name: "RolePlay", title: "Role Play", description: "You're shown 3 movies and a character<br> Choose the movie that featured the character" }
 ];
 
-function MovieData(filmID, title, poster, blurb) {
+const topScores = [new Answers("ThreeOfAKind", "casual"),
+    new Answers("ThreeOfAKind", "survival"),
+    new Answers("RolePlay", "casual"),
+    new Answers("RolePlay", "survival"),
+];
+
+function Answers(game, gameMode) {
+    this.gameName = game;
+    this.mode = gameMode;
+    this.rightAnswers = [];
+    this.answerGiven = [];
+    this.score = 0;
+    this.bestScores = [0, 0, 0];
+}
+
+function MovieData(filmID, title, poster, popular, blurb, date) {
     this.movieID = filmID;
     this.movieTitle = title;
     this.moviePoster = poster;
+    this.popularity = popular;
     this.synopsis = blurb;
+    this.releaseYear = date;
     this.castMembers = [];
 }
 
@@ -49,18 +64,32 @@ async function fetchMovieCast(movieID) {
 
 function populateGameData(topRatedList) {
     topRatedList.forEach((item) => {
-        if (item.original_language == "en") {
+        if (item.original_language == "en" && !item.adult) {
+
+            var releaseDate = new Date(item.release_date);
+            releaseDate = releaseDate.getFullYear();
+
             if (item.original_title == null) {
                 if (item.name != null) {
-                    var movieData = new MovieData(item.id, item.name, item.poster_path, item.overview);
+                    var movieData = new MovieData(item.id, item.name, item.poster_path, item.popularity, item.overview, releaseDate);
                 } else if (item.title != null) {
-                    var movieData = new MovieData(item.id, item.title, item.poster_path, item.overview);
+                    var movieData = new MovieData(item.id, item.title, item.poster_path, item.popularity, item.overview, releaseDate);
                 }
             } else {
-                var movieData = new MovieData(item.id, item.original_title, item.poster_path, item.overview);
+                var movieData = new MovieData(item.id, item.original_title, item.poster_path, item.popularity, item.overview, releaseDate);
             }
 
             gameData.push(movieData);
+
+        }
+    });
+}
+
+function populateCastMembers(movieObject, cast) {
+    cast.forEach((item, index, array) => {
+        if (item.profile_path != null) {
+            var actor = new ActorData(item.id, item.name, item.character, item.profile_path);
+            movieObject.castMembers.push(actor);
         }
     });
 }
@@ -69,7 +98,7 @@ async function loadGame() {
     document.getElementById("gameWindow").innerHTML = `<img src="Assets/Media/3GFW2.gif" alt="loading">`;
 
     //get 20 pages of movies
-    for (let i = 1; i < 20; i++) {
+    for (let i = 1; i < 30; i++) {
         var currentMoviesList = await fetchTopRatedMovies(i);
         await populateGameData(currentMoviesList.results);
     }
@@ -77,15 +106,13 @@ async function loadGame() {
     //add cast members to each movie (not included in inital movie data)
     gameData.forEach(async(movieObject) => {
         var cast = await fetchMovieCast(movieObject.movieID);
-        cast.forEach((item, index, array) => {
-            if (item.profile_path != null) {
-                var actor = new ActorData(item.id, item.name, item.character, item.profile_path);
-                movieObject.castMembers.push(actor);
-            }
-        });
-    });
+        await populateCastMembers(movieObject, cast);
 
-    console.log(gameData);
+        if (movieObject.popularity > 10 && movieObject.releaseYear > 1970) {
+            mostPopular.push(movieObject);
+        }
+
+    });
 
     setTimeout(() => {
         document.getElementById("gameWindow").innerHTML = `<div class="col-12 tmdb">
@@ -111,8 +138,12 @@ function chooseGame() {
 
 function chooseGameMode(gameType) {
 
-    console.log(gameType);
-    currentGameSet = [...gameData];
+    if (gameType == "ThreeOfAKind") {
+        currentGameSet = [...gameData];
+    } else if (gameType == "RolePlay") {
+        currentGameSet = [...mostPopular];
+    }
+
     var thisGame;
 
     games.forEach((item) => {
@@ -131,7 +162,7 @@ function chooseGameMode(gameType) {
 }
 
 //---------------------------------------------GAME MECHANICS---------------------------------------------
-//------------------ shuffle - randomInt - check answer - game counter - draw movies row -----------------
+//------------------ shuffle - randomInt - check answer - game counter - draw movies row - draw actors row - draw character row-----------------
 
 
 function getRandomIntInclusive(min, max) {
@@ -142,7 +173,11 @@ function getRandomIntInclusive(min, max) {
 
 function shuffleArray(arrayToShuffle) {
     for (let i = arrayToShuffle.length - 1; i > 0; --i) {
-        let j = Math.floor(Math.random() * (i + 1));
+        //let j = Math.floor(Math.random() * (i + 1));
+        let j = getRandomIntInclusive(0, arrayToShuffle.length - 1);
+        while (j == i) {
+            j = getRandomIntInclusive(0, arrayToShuffle.length - 1);
+        }
         let temp = arrayToShuffle[i];
         arrayToShuffle[i] = arrayToShuffle[j];
         arrayToShuffle[j] = temp;
@@ -150,64 +185,22 @@ function shuffleArray(arrayToShuffle) {
     return arrayToShuffle;
 }
 
-async function checkAnswer(clickedMovie, correctAnswer, isLastGo, whichGame, gameMode) {
 
-    if (clickedMovie.id == correctAnswer.movieID) {
-        $(`#movie-${clickedMovie.id}`).addClass("correct-answer");
-        correctAnswersGiven.push(correctAnswer);
-    } else {
-        $(`#movie-${clickedMovie.id}`).addClass("incorrect-answer");
-        if (gameMode == "survival") {
-            isLastGo = true;
-        }
-        console.log("incorrect");
-    }
-
-    setTimeout(() => {
-
-        document.getElementById("gameWindow").innerHTML = "";
-        if (isLastGo) {
-            alert(`Game Over! you got ${correctAnswersGiven.length} correct`);
-
-            currentGameSet = [...gameData];
-            correctAnswersGiven = [];
-            document.getElementById("titleRow").innerHTML = `<h2>Movie Buff</h2>`;
-            chooseGame();
-        } else if (whichGame == "ThreeOfAKind") {
-            setThreeOfAKindBoard(gameMode, false, false);
-        }
-    }, 1000);
-
-}
-
-
-function setGameCounter(isFirstRound) {
-    //set number of goes and decrement each time until 0;
-    if (isFirstRound) {
-        goNumber = 9;
-    } else {
-        goNumber--;
-    }
-
-    //check if this is the last go
-
-    if (goNumber == 0) {
-        return true;
-    } else return false;
-}
-
-function setMovieRow(movies, isLastGo, whichGame, gameMode) {
+function setMovieRow(movies) {
     movies = shuffleArray(movies);
     document.getElementById("movies-row").innerHTML =
-        `<div id="${movies[0].movieID}" class="col-4 movies movie-1" onclick="checkAnswer(this, correctAnswer, ${isLastGo}, '${whichGame}', '${gameMode}')">
+        `<div id="${movies[0].movieID}" class="col-4 movies movie-1">
                 <img id="movie-${movies[0].movieID}" src="https://image.tmdb.org/t/p/w500/${movies[0].moviePoster}" width=100%>
             </div>
-            <div id="${movies[1].movieID}" class="col-4 movies" onclick="checkAnswer(this, correctAnswer, ${isLastGo}, '${whichGame}', '${gameMode}')">
+            <div id="${movies[1].movieID}" class="col-4 movies">
                 <img id="movie-${movies[1].movieID}" src="https://image.tmdb.org/t/p/w500/${movies[1].moviePoster}" width=100%>
             </div>
-            <div id="${movies[2].movieID}" class="col-4 movies movie-3" onclick="checkAnswer(this, correctAnswer, ${isLastGo}, '${whichGame}', '${gameMode}')">
+            <div id="${movies[2].movieID}" class="col-4 movies movie-3">
                 <img id="movie-${movies[2].movieID}" src="https://image.tmdb.org/t/p/w500/${movies[2].moviePoster}" width=100%>
             </div> `;
+
+    return movies;
+
 }
 
 async function setActorsRow(actors) {
@@ -222,15 +215,187 @@ function actorsRow(actors) {
     var secondActorImg = `https://image.tmdb.org/t/p/w500${actors[1].actorImage}`;
     var thirdActorImg = `https://image.tmdb.org/t/p/w500${actors[2].actorImage}`;
 
-    document.getElementById("actor-1").innerHTML = `<img id="firstActor" src="${firstActorImg}" alt="${actors[0].actorName}" width=100% class="hidden"><label for="firstActor" class="actor-name light-font">${actors[0].actorName}</label>`;
-    document.getElementById("actor-2").innerHTML = `<img id="secondActor" src="${secondActorImg}" alt="${actors[1].actorName}" width=100% class="hidden"><label for="firstActor" class="actor-name light-font">${actors[1].actorName}</label>`;
-    document.getElementById("actor-3").innerHTML = `<img id="thirdActor" src="${thirdActorImg}" alt="${actors[2].actorName}" width=100% class="hidden"><label for="firstActor" class="actor-name light-font">${actors[2].actorName}</label>`;
+    document.getElementById("actor-1").innerHTML = `<img id="firstActor" src="${firstActorImg}" alt="${actors[0].actorName}" width=100%><label for="firstActor" class="actor-name light-font">${actors[0].actorName}</label>`;
+    document.getElementById("actor-2").innerHTML = `<img id="secondActor" src="${secondActorImg}" alt="${actors[1].actorName}" width=100%><label for="firstActor" class="actor-name light-font">${actors[1].actorName}</label>`;
+    document.getElementById("actor-3").innerHTML = `<img id="thirdActor" src="${thirdActorImg}" alt="${actors[2].actorName}" width=100%><label for="firstActor" class="actor-name light-font">${actors[2].actorName}</label>`;
 }
 
 $(window).resize(() => {
     var imgWidth = $('#firstActor').width();
     $('.actor-name').width(imgWidth);
 });
+
+function showLeaderboard(index) {
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12">
+                                                        <h2 class="light-font">Game Over!</h4>
+                                                        <h3 class="light-font"> You got ${topScores[index].score} correct answers<h5>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <h4 class="light-font">Leaderboard</h4>
+                                                            <h5 class="light-font">1: ${topScores[index].bestScores[0]} </h5>
+                                                            <h5 class="light-font">2: ${topScores[index].bestScores[1]} </h5>
+                                                            <h5 class="light-font">3: ${topScores[index].bestScores[2]} </h5>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <button class="btn btn-success" onclick="resetAnswers()">continue</button>
+                                                        </div>`
+
+
+}
+
+function resetAnswers() {
+    topScores.forEach((item) => {
+        item.rightAnswers = [];
+        item.answerGiven = [];
+        item.score = 0;
+    });
+
+    chooseGame();
+}
+
+function logAnswers(movies, chosenMovie, index) {
+
+    // Casual Mode Responses
+    if (index === 0 || index === 2) {
+        document.getElementById(`movie-${movies[0].movieID}`).addEventListener("click", function() {
+            topScores[index].rightAnswers.push(chosenMovie);
+            topScores[index].answerGiven.push(movies[0]);
+            if (correctAnswer.movieID == movies[0].movieID) {
+                topScores[index].score++;
+                $(this).addClass("correct-answer");
+            } else $(this).addClass("incorrect-answer");
+
+            setTimeout(() => {
+                if (topScores[index].rightAnswers.length > 9) {
+                    setBestScores(index);
+                    showLeaderboard(index);
+                } else if (index === 0) {
+                    setThreeOfAKindBoard(topScores[index].mode, false, false);
+                } else if (index === 2) {
+                    setRolePlayBoard(topScores[index].mode, false, false);
+                } else console.log("Error: topScores Index neither 0 nor 2");
+            }, 1000);
+        });
+        document.getElementById(`movie-${movies[1].movieID}`).addEventListener("click", function() {
+            topScores[index].rightAnswers.push(chosenMovie);
+            topScores[index].answerGiven.push(movies[1]);
+            if (correctAnswer.movieID == movies[1].movieID) {
+                topScores[index].score++;
+                $(this).addClass("correct-answer");
+            } else $(this).addClass("incorrect-answer");
+
+            setTimeout(() => {
+                if (topScores[index].rightAnswers.length > 9) {
+                    setBestScores(index);
+                    showLeaderboard(index);
+                } else if (index === 0) {
+                    setThreeOfAKindBoard(topScores[index].mode, false, false);
+                } else if (index === 2) {
+                    setRolePlayBoard(topScores[index].mode, false, false);
+                } else console.log("Error: topScores Index neither 0 nor 2");
+            }, 1000);
+        });
+        document.getElementById(`movie-${movies[2].movieID}`).addEventListener("click", function() {
+            topScores[index].rightAnswers.push(chosenMovie);
+            topScores[index].answerGiven.push(movies[2]);
+            if (correctAnswer.movieID == movies[2].movieID) {
+                topScores[index].score++;
+                $(this).addClass("correct-answer");
+            } else $(this).addClass("incorrect-answer");
+
+            setTimeout(() => {
+                if (topScores[index].rightAnswers.length > 9) {
+                    setBestScores(index);
+                    showLeaderboard(index);
+                } else if (index === 0) {
+                    setThreeOfAKindBoard(topScores[index].mode, false, false);
+                } else if (index === 2) {
+                    setRolePlayBoard(topScores[index].mode, false, false);
+                } else console.log("Error: topScores Index neither 0 nor 2");
+            }, 1000);
+        });
+    } else if (index === 1 || index === 3) {
+        //Survival Mode Responses
+        document.getElementById(`movie-${movies[0].movieID}`).addEventListener("click", function() {
+            topScores[index].rightAnswers.push(chosenMovie);
+            topScores[index].answerGiven.push(movies[0]);
+            if (correctAnswer.movieID == movies[0].movieID) {
+                topScores[index].score++;
+                $(this).addClass("correct-answer");
+                setTimeout(() => {
+                    if (index === 1) {
+                        setThreeOfAKindBoard(topScores[index].mode, false, false);
+                    } else if (index === 3) {
+                        setRolePlayBoard(topScores[index].mode, false, false);
+                    } else console.log("Error: topScores Index neither 1 nor 3");
+                }, 1000);
+            } else {
+                $(this).addClass("incorrect-answer");
+                setTimeout(() => {
+                    setBestScores(index);
+                    showLeaderboard(index);
+                }, 1000);
+            }
+
+
+        });
+        document.getElementById(`movie-${movies[1].movieID}`).addEventListener("click", function() {
+            topScores[index].rightAnswers.push(chosenMovie);
+            topScores[index].answerGiven.push(movies[1]);
+            if (correctAnswer.movieID == movies[1].movieID) {
+                topScores[index].score++;
+                $(this).addClass("correct-answer");
+                setTimeout(() => {
+                    if (index === 1) {
+                        setThreeOfAKindBoard(topScores[index].mode, false, false);
+                    } else if (index === 3) {
+                        setRolePlayBoard(topScores[index].mode, false, false);
+                    } else console.log("Error: topScores Index neither 1 nor 3");
+                }, 1000);
+            } else {
+                $(this).addClass("incorrect-answer");
+                setTimeout(() => {
+                    setBestScores(index);
+                    showLeaderboard(index);
+                }, 1000);
+            }
+
+        });
+        document.getElementById(`movie-${movies[2].movieID}`).addEventListener("click", function() {
+            topScores[index].rightAnswers.push(chosenMovie);
+            topScores[index].answerGiven.push(movies[2]);
+            if (correctAnswer.movieID == movies[2].movieID) {
+                topScores[index].score++;
+                $(this).addClass("correct-answer");
+                setTimeout(() => {
+                    if (index === 1) {
+                        setThreeOfAKindBoard(topScores[index].mode, false, false);
+                    } else if (index === 3) {
+                        setRolePlayBoard(topScores[index].mode, false, false);
+                    } else console.log("Error: topScores Index neither 1 nor 3");
+                }, 1000);
+            } else {
+                $(this).addClass("incorrect-answer");
+                setTimeout(() => {
+                    setBestScores(index);
+                    showLeaderboard(index);
+                }, 1000);
+            }
+        });
+    }
+}
+
+function setBestScores(index) {
+    if (topScores[index].score > topScores[index].bestScores[0]) {
+        topScores[index].bestScores.pop();
+        topScores[index].bestScores.unshift(topScores[index].score)
+    } else if (topScores[index].score > topScores[index].bestScores[1]) {
+        topScores[index].bestScores[2] = topScores[index].bestScores[1];
+        topScores[index].bestScores[1] = topScores[index].score;
+    } else if (topScores[index].score > topScores[index].bestScores[2]) {
+        topScores[index].bestScores[2] = topScores[index].score;
+    }
+}
 
 
 //-------------------------------------------------------3 OF A KIND GAME-----------------------------------------------------------
@@ -239,9 +404,9 @@ function setThreeOfAKindBoard(gameMode, isFirstRound, isLastGo) {
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
                                                             <div class="row actors-row">
-                                                                <div id="actor-1" class="col-4 actors hidden"></div>
-                                                                <div id="actor-2" class="col-4 actors hidden"></div>
-                                                                <div id="actor-3" class="col-4 actors hidden"></div>
+                                                                <div id="actor-1" class="col-4 actors"></div>
+                                                                <div id="actor-2" class="col-4 actors"></div>
+                                                                <div id="actor-3" class="col-4 actors"></div>
                                                             </div>
                                                             <div id="movies-row" class="row movies-row">
                                                             </div>
@@ -275,27 +440,23 @@ function playThreeOfAKindCasual(isFirstRound, isLastGo) {
         movies[2] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
         console.log("duplicate movies");
     }
-    // populate choice of actors for chosen movie
-    //setTimeout used to fix bug that was trying to set the actors before the movies array was fully populated
-    setTimeout(async() => {
-        for (let i = 0; i < 3; i++) {
-            console.log(chosenMovie.castMembers[i]);
-            if (chosenMovie.castMembers[i] == null) {
-                actors[i] = chosenMovie.castMembers[i + 3];
-            } else {
-                actors[i] = chosenMovie.castMembers[i];
-            }
-        }
 
-        isLastGo = setGameCounter(isFirstRound);
+    //wait a moment to make sure chosenMovie is defined
+    setTimeout(async() => {
+        // populate choice of actors for chosen movie
+
+        actors = await getActors(chosenMovie);
 
         // set the game board
 
         await setActorsRow(actors);
 
-        await setMovieRow(movies, isLastGo, "ThreeOfAKind", "casual");
+        movies = await setMovieRow(movies);
 
+        await logAnswers(movies, chosenMovie, 0);
     }, 100);
+
+
 
 }
 
@@ -319,23 +480,189 @@ function playThreeOfAKindSurvival(isFirstRound) {
         movies[2] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
         console.log("duplicate movies");
     }
-    // populate choice of actors for chosen movie
+
+    //Wait a moment to make sure chosenMovie is defined
+    setTimeout(async() => {
+        // populate choice of actors for chosen movie
+        actors = await getActors(chosenMovie);
+
+        // set the game board    
+
+        await setActorsRow(actors);
+
+        movies = setMovieRow(movies);
+
+        await logAnswers(movies, chosenMovie, 1);
+
+    }, 100);
+
+}
+
+function getActors(movie) {
+    var actors = [movie.castMembers[0], movie.castMembers[1], movie.castMembers[2]];
+    return actors;
+}
+
+//-------------------------------------------------------ROLE PLAY GAME-----------------------------------------------------------
+
+function setRolePlayBoard(gameMode, isFirstRound, isLastGo) {
+
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
+                                                            <div class="row character-row">                                        
+                                                                <div id="chosen-character" class="col-8 movie-character"></div>
+                                                            </div>
+                                                            <div id="movies-row" class="row movies-row">
+                                                            </div>
+
+                                                        </div>`;
+
+    if (gameMode == "casual") {
+        playRolePlayCasual();
+    } else if (gameMode == "survival") {
+        playRolePlaySurvival();
+    }
+}
+
+async function playRolePlayCasual() {
+
+    var movies = [];
+    var chosenMovie;
+
+    currentGameSet = shuffleArray(currentGameSet);
+    var testmovie = currentGameSet[0];
+    var testcharacters = await getCharacters(testmovie);
+
+    wellIsit = isCharNameInMovieTitle(testmovie.movieTitle, testcharacters);
+    console.log("char name is in movie title before while loop: " + wellIsit);
+
+    while (wellIsit) {
+        currentGameSet.shift();
+        testmovie = currentGameSet[0];
+        testcharacters = await getCharacters(testmovie);
+        wellIsit = isCharNameInMovieTitle(testmovie.movieTitle, testcharacters);
+    }
+
+    console.log("char name is in movie title after while loop: " + wellIsit);
+
+    chosenMovie = currentGameSet.shift();
+    correctAnswer = chosenMovie;
+
+    //set choice of 3 movies including the correct answer
+    movies[0] = chosenMovie;
+    movies[1] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+    movies[2] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+
+    while (movies[1].movieID == movies[2].movieID) {
+        movies[2] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+        console.log("duplicate movies");
+    }
+
+    var chosenMovieCharacters = await getCharacters(movies[0]);
+    document.getElementById("chosen-character").innerHTML = `<p class="characters light-font">${chosenMovieCharacters[0]}</p>
+                                                            <p class="characters light-font">${chosenMovieCharacters[1]}</p>
+                                                            <p class="characters light-font">${chosenMovieCharacters[2]}</p>`;
+
+    movies = setMovieRow(movies);
+    await logAnswers(movies, chosenMovie, 2);
+
+}
+
+async function playRolePlaySurvival() {
+
+    var movies = [];
+    var chosenMovie;
+
+
+    currentGameSet = shuffleArray(currentGameSet);
+    var testmovie = currentGameSet[0];
+    var testcharacters = await getCharacters(testmovie);
+
+    wellIsit = isCharNameInMovieTitle(testmovie.movieTitle, testcharacters);
+    console.log("char name is in movie title before while loop: " + wellIsit);
+
+    while (wellIsit) {
+        currentGameSet.shift();
+        testmovie = currentGameSet[0];
+        testcharacters = await getCharacters(testmovie);
+        wellIsit = isCharNameInMovieTitle(testmovie.movieTitle, testcharacters);
+    }
+
+    console.log("char name is in movie title after while loop: " + wellIsit);
+
+    chosenMovie = currentGameSet.shift();
+    correctAnswer = chosenMovie;
+
+    //set choice of 3 movies including the correct answer
+    movies[0] = chosenMovie;
+    movies[1] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+    movies[2] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+
+    while (movies[1].movieID == movies[2].movieID) {
+        movies[2] = currentGameSet[getRandomIntInclusive(0, currentGameSet.length - 1)];
+        console.log("duplicate movies");
+    }
+
+    var chosenMovieCharacters = await getCharacters(movies[0]);
+    document.getElementById("chosen-character").innerHTML = `<p class="characters light-font">${chosenMovieCharacters[0]}</p>
+                                                            <p class="characters light-font">${chosenMovieCharacters[1]}</p>
+                                                            <p class="characters light-font">${chosenMovieCharacters[2]}</p>`;
+
+    movies = setMovieRow(movies);
+    await logAnswers(movies, chosenMovie, 3);
+}
+
+function getCharacters(movie) {
+
+    var characterNames = [];
+    console.log(movie.movieTitle);
+
     for (let i = 0; i < 3; i++) {
-        console.log(chosenMovie.castMembers[i]);
-        if (chosenMovie.castMembers[i].actorImage == null) {
-            actors[i] = chosenMovie.castMembers[i + 3];
-        } else {
-            actors[i] = chosenMovie.castMembers[i];
+        characterNames.push(movie.castMembers[i].characterName);
+    }
+
+    characterNames.forEach((name, index) => {
+        if (name.indexOf("(") !== -1) {
+            var newName = "";
+            for (let i = 0; i < name.indexOf("("); i++) {
+                newName += name[i];
+            }
+            characterNames[index] = newName;
         }
-    }
+    });
 
-    if (isFirstRound) {
-        goNumber = 0;
-    }
+    return characterNames;
 
-    // set the game board
+}
 
-    setActorsRow(actors);
+function isCharNameInMovieTitle(movie, characters) {
+    var isIt = false;
+    movie = movie.split(" ");
+    console.log(movie);
 
-    setMovieRow(movies, false, "ThreeOfAKind", "survival");
+    characters.forEach((item, index) => {
+        var newArray = item.split(" ");
+        characters[index] = newArray;
+    });
+
+    console.log(characters);
+
+    characters.forEach((namesArray) => {
+        var indexToRemove = namesArray.indexOf("");
+        if (indexToRemove > -1) {
+            namesArray.splice(indexToRemove, 1);
+            console.log(namesArray);
+        }
+    })
+
+    movie.forEach((item) => {
+        characters.forEach((namesArray) => {
+            namesArray.forEach((names) => {
+                console.log("item |" + item + "| : name |" + names + "|");
+                console.log(item.indexOf(names));
+                if (item.indexOf(names) != -1) { isIt = true; }
+            });
+        });
+    });
+
+    return isIt;
 }
