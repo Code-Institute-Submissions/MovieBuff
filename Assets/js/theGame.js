@@ -7,7 +7,7 @@ const mostPopular = [];
 var currentGameSet = [];
 
 const games = [{ name: "ThreeOfAKind", title: "3 of a Kind", description: "You're shown 3 actors and 3 movies<br> Choose the movie that connects the actors" },
-    { name: "RolePlay", title: "Role Play", description: "You're shown 3 movies and a character<br> Choose the movie that featured the character" }
+    { name: "RolePlay", title: "Role Play", description: "Choose the movie that featured the three characters shown" }
 ];
 
 const topScores = [new Answers("ThreeOfAKind", "casual"),
@@ -130,6 +130,8 @@ async function loadGame() {
 }
 
 function chooseGame() {
+    document.getElementById("titleRow").innerHTML = "";
+
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
                                                                     <button onclick="chooseGameMode('ThreeOfAKind')" class="btn btn-success special-elite-font">3 of a Kind</button>
                                                                     <button onclick="chooseGameMode('RolePlay')" class="btn btn-success special-elite-font">Role Play</button>
@@ -173,11 +175,8 @@ function getRandomIntInclusive(min, max) {
 
 function shuffleArray(arrayToShuffle) {
     for (let i = arrayToShuffle.length - 1; i > 0; --i) {
-        //let j = Math.floor(Math.random() * (i + 1));
-        let j = getRandomIntInclusive(0, arrayToShuffle.length - 1);
-        while (j == i) {
-            j = getRandomIntInclusive(0, arrayToShuffle.length - 1);
-        }
+        let j = Math.floor(Math.random() * (i + 1));
+        // let j = getRandomIntInclusive(0, arrayToShuffle.length - 1);
         let temp = arrayToShuffle[i];
         arrayToShuffle[i] = arrayToShuffle[j];
         arrayToShuffle[j] = temp;
@@ -226,19 +225,37 @@ $(window).resize(() => {
 });
 
 function showLeaderboard(index) {
-    document.getElementById("gameWindow").innerHTML = `<div class="col-12">
-                                                        <h2 class="light-font">Game Over!</h4>
-                                                        <h3 class="light-font"> You got ${topScores[index].score} correct answers<h5>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <h4 class="light-font">Leaderboard</h4>
-                                                            <h5 class="light-font">1: ${topScores[index].bestScores[0]} </h5>
-                                                            <h5 class="light-font">2: ${topScores[index].bestScores[1]} </h5>
-                                                            <h5 class="light-font">3: ${topScores[index].bestScores[2]} </h5>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <button class="btn btn-success" onclick="resetAnswers()">continue</button>
-                                                        </div>`
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 leaderboard-container">
+    <div class="col-6 left-column trophy"><img src="Assets/Media/goldenglobesmall.png"></div>
+    <div class="row right-row current-score">
+        <div id="you" class="col-7">YOU GOT</div>
+        <div id="player-score" class="col-5">${topScores[index].score}</div>
+    </div>
+    <div class="row right-row centered">
+        <div class="col-12 leaderboard">
+            <h2 class="headers">Leaderboard</h2>
+        </div>
+        <div class="col-12 high-scores">
+            <span class="leaderboard-scores">1st</span>
+            <span class="leaderboard-scores">${topScores[index].bestScores[0]}</span>
+        </div>
+        <div class="col-12 high-scores">
+            <span class="leaderboard-scores">2nd</span>
+            <span class="leaderboard-scores">${topScores[index].bestScores[1]}</span>
+        </div>
+        <div class="col-12 high-scores">
+            <span class="leaderboard-scores">3rd</span>
+            <span class="leaderboard-scores">${topScores[index].bestScores[2]}</span>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-12 bottom-buttons">
+    <button class="btn btn-success">Replay</button>
+    <button class="btn btn-success" onclick="resetAnswers()">Home</button>
+</div>`
 
 
 }
@@ -260,7 +277,7 @@ function logAnswers(movies, chosenMovie, index) {
         document.getElementById(`movie-${movies[0].movieID}`).addEventListener("click", function() {
             topScores[index].rightAnswers.push(chosenMovie);
             topScores[index].answerGiven.push(movies[0]);
-            if (correctAnswer.movieID == movies[0].movieID) {
+            if (chosenMovie.movieID == movies[0].movieID) {
                 topScores[index].score++;
                 $(this).addClass("correct-answer");
             } else $(this).addClass("incorrect-answer");
@@ -279,7 +296,7 @@ function logAnswers(movies, chosenMovie, index) {
         document.getElementById(`movie-${movies[1].movieID}`).addEventListener("click", function() {
             topScores[index].rightAnswers.push(chosenMovie);
             topScores[index].answerGiven.push(movies[1]);
-            if (correctAnswer.movieID == movies[1].movieID) {
+            if (chosenMovie.movieID == movies[1].movieID) {
                 topScores[index].score++;
                 $(this).addClass("correct-answer");
             } else $(this).addClass("incorrect-answer");
@@ -298,7 +315,7 @@ function logAnswers(movies, chosenMovie, index) {
         document.getElementById(`movie-${movies[2].movieID}`).addEventListener("click", function() {
             topScores[index].rightAnswers.push(chosenMovie);
             topScores[index].answerGiven.push(movies[2]);
-            if (correctAnswer.movieID == movies[2].movieID) {
+            if (chosenMovie.movieID == movies[2].movieID) {
                 topScores[index].score++;
                 $(this).addClass("correct-answer");
             } else $(this).addClass("incorrect-answer");
@@ -319,7 +336,7 @@ function logAnswers(movies, chosenMovie, index) {
         document.getElementById(`movie-${movies[0].movieID}`).addEventListener("click", function() {
             topScores[index].rightAnswers.push(chosenMovie);
             topScores[index].answerGiven.push(movies[0]);
-            if (correctAnswer.movieID == movies[0].movieID) {
+            if (chosenMovie.movieID == movies[0].movieID) {
                 topScores[index].score++;
                 $(this).addClass("correct-answer");
                 setTimeout(() => {
@@ -342,7 +359,7 @@ function logAnswers(movies, chosenMovie, index) {
         document.getElementById(`movie-${movies[1].movieID}`).addEventListener("click", function() {
             topScores[index].rightAnswers.push(chosenMovie);
             topScores[index].answerGiven.push(movies[1]);
-            if (correctAnswer.movieID == movies[1].movieID) {
+            if (chosenMovie.movieID == movies[1].movieID) {
                 topScores[index].score++;
                 $(this).addClass("correct-answer");
                 setTimeout(() => {
@@ -364,7 +381,7 @@ function logAnswers(movies, chosenMovie, index) {
         document.getElementById(`movie-${movies[2].movieID}`).addEventListener("click", function() {
             topScores[index].rightAnswers.push(chosenMovie);
             topScores[index].answerGiven.push(movies[2]);
-            if (correctAnswer.movieID == movies[2].movieID) {
+            if (chosenMovie.movieID == movies[2].movieID) {
                 topScores[index].score++;
                 $(this).addClass("correct-answer");
                 setTimeout(() => {
@@ -414,13 +431,13 @@ function setThreeOfAKindBoard(gameMode, isFirstRound, isLastGo) {
                                                         </div>`;
 
     if (gameMode == "casual") {
-        playThreeOfAKindCasual(isFirstRound, isLastGo);
+        playThreeOfAKindCasual();
     } else if (gameMode == "survival") {
-        playThreeOfAKindSurvival(isFirstRound, isLastGo);
+        playThreeOfAKindSurvival();
     }
 }
 
-function playThreeOfAKindCasual(isFirstRound, isLastGo) {
+function playThreeOfAKindCasual() {
     console.log("three of a kind casual");
 
     var actors = [];
@@ -460,8 +477,7 @@ function playThreeOfAKindCasual(isFirstRound, isLastGo) {
 
 }
 
-function playThreeOfAKindSurvival(isFirstRound) {
-    console.log("three of a kind survival");
+function playThreeOfAKindSurvival() {
 
     var actors = [];
     var movies = [];
@@ -469,7 +485,10 @@ function playThreeOfAKindSurvival(isFirstRound) {
 
     currentGameSet = shuffleArray(currentGameSet);
     chosenMovie = currentGameSet.shift();
-    correctAnswer = chosenMovie;
+    console.log("currentgameset:");
+    console.log(currentGameSet);
+    console.log("chosen Movie");
+    console.log(chosenMovie);
 
     //set choice of 3 movies including the correct answer
     movies[0] = chosenMovie;
