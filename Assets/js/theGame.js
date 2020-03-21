@@ -6,8 +6,20 @@ const gameData = [];
 const mostPopular = [];
 var currentGameSet = [];
 
-const games = [{ name: "ThreeOfAKind", title: "3 of a Kind", description: "You're shown 3 actors and 3 movies<br> Choose the movie that connects the actors" },
-    { name: "RolePlay", title: "Role Play", description: "Choose the movie that featured the three characters shown" }
+const games = [{
+        name: "ThreeOfAKind",
+        title: "3 of a Kind",
+        description: "3 actors / 3 movies. Choose the movie that connects the actors",
+    },
+    {
+        name: "RolePlay",
+        title: "Role Play",
+        description: "Choose the movie that featured the three characters shown"
+    },
+    {
+        casualMode: "10 rounds, no penalty. Try to get 10 out of 10",
+        survivalMode: "Infinite (ish) rounds but get one wrong and it's game over"
+    }
 ];
 
 const topScores = [new Answers("ThreeOfAKind", "casual"),
@@ -130,21 +142,44 @@ async function loadGame() {
 }
 
 function chooseGame() {
-    document.getElementById("titleRow").innerHTML = "";
+    document.getElementById("titleRow").innerHTML = `
+                                                        <h1 id="title" class="headers">Movie Buff</h1>
+                                                        `;
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
-                                                                    <button onclick="chooseGameMode('ThreeOfAKind')" class="btn btn-success special-elite-font">3 of a Kind</button>
-                                                                    <button onclick="chooseGameMode('RolePlay')" class="btn btn-success special-elite-font">Role Play</button>
+                                                                    <button id="threeofakind" data-toggle="popover" data-content="${games[0].description}" data-placement="bottom" class="btn btn-success special-elite-font">3 of a Kind</button>
+                                                                    <button id="roleplay" data-toggle="popover" data-content="${games[1].description}" data-placement="bottom" class="btn btn-success special-elite-font">Role Play</button>
                                                                 </div>`;
+
+
+    $("#threeofakind").mouseenter(() => {
+        $("#threeofakind").popover('show');
+    });
+    $("#threeofakind").mouseleave(() => {
+        $("#threeofakind").popover('hide');
+    });
+    $("#threeofakind").click(() => {
+        $("#threeofakind").popover('hide');
+        chooseGameMode('ThreeOfAKind');
+    });
+
+    $("#roleplay").mouseenter(() => {
+        $("#roleplay").popover('show');
+    });
+    $("#roleplay").mouseleave(() => {
+        $("#roleplay").popover('hide');
+    });
+    $("#roleplay").click(() => {
+        $("#roleplay").popover('hide');
+        chooseGameMode('RolePlay');
+    });
+
+
 }
 
-function chooseGameMode(gameType) {
 
-    if (gameType == "ThreeOfAKind") {
-        currentGameSet = [...gameData];
-    } else if (gameType == "RolePlay") {
-        currentGameSet = [...mostPopular];
-    }
+
+function chooseGameMode(gameType) {
 
     var thisGame;
 
@@ -154,13 +189,52 @@ function chooseGameMode(gameType) {
         }
     });
     document.getElementById("titleRow").innerHTML = `<div class="col-12">
-                                                        <h2 class="light-font">${thisGame.title}</h2>
-                                                        <h6 class="light-font">${thisGame.description}</h6>  
+                                                        <h2 class="game-title">${thisGame.title}</h2> 
                                                     </div>`;
+
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
-                                                            <button onclick="set${gameType}Board('casual', true, false)" class="btn btn-success special-elite-font">Casual</button>
-                                                            <button onclick="set${gameType}Board('survival', true, false)" class="btn btn-success special-elite-font">Survival</button>
-                                                        </div>`;
+                                                            <button id="casualMode" data-toggle="popover" data-content="${games[2].casualMode}" data-placement="bottom" class="btn btn-success light-font">Casual</button>
+                                                            <button id="survivalMode" data-toggle="popover" data-content="${games[2].survivalMode}" data-placement="bottom" class="btn btn-success light-font">Survival</button>
+                                                            <button id="back" class="btn btn-success light-font">Exit</button>
+                                                            </div>`;
+
+    $("#back").on('click', () => {
+        chooseGame();
+    });
+
+    $("#casualMode").mouseenter(() => {
+        $("#casualMode").popover('show');
+    });
+    $("#casualMode").mouseleave(() => {
+        $("#casualMode").popover('hide');
+    });
+    $("#casualMode").click(() => {
+        $("#casualMode").popover('hide');
+        if (gameType == "ThreeOfAKind") {
+            currentGameSet = [...gameData];
+            setThreeOfAKindBoard('casual');
+        } else if (gameType == "RolePlay") {
+            currentGameSet = [...mostPopular];
+            setRolePlayBoard('casual')
+        }
+    });
+
+    $("#survivalMode").mouseenter(() => {
+        $("#survivalMode").popover('show');
+    });
+    $("#survivalMode").mouseleave(() => {
+        $("#survivalMode").popover('hide');
+    });
+    $("#survivalMode").click(() => {
+        $("#survivalMode").popover('hide');
+        if (gameType == "ThreeOfAKind") {
+            currentGameSet = [...gameData];
+            setThreeOfAKindBoard('survival');
+        } else if (gameType == "RolePlay") {
+            currentGameSet = [...mostPopular];
+            setRolePlayBoard('survival')
+        }
+    });
 }
 
 //---------------------------------------------GAME MECHANICS---------------------------------------------
@@ -176,7 +250,6 @@ function getRandomIntInclusive(min, max) {
 function shuffleArray(arrayToShuffle) {
     for (let i = arrayToShuffle.length - 1; i > 0; --i) {
         let j = Math.floor(Math.random() * (i + 1));
-        // let j = getRandomIntInclusive(0, arrayToShuffle.length - 1);
         let temp = arrayToShuffle[i];
         arrayToShuffle[i] = arrayToShuffle[j];
         arrayToShuffle[j] = temp;
@@ -253,11 +326,29 @@ function showLeaderboard(index) {
 </div>
 
 <div class="col-12 bottom-buttons">
-    <button class="btn btn-success">Replay</button>
-    <button class="btn btn-success" onclick="resetAnswers()">Home</button>
+    <button id="replay" class="btn btn-success light-font">Replay</button>
+    <button id="home" class="btn btn-success light-font">Home</button>
 </div>`
 
+    $("#replay").click(() => {
+        resetAnswers();
+        if (index == 0) {
+            setThreeOfAKindBoard('casual');
+        } else if (index == 1) {
+            setThreeOfAKindBoard('survival');
+        } else if (index == 2) {
+            setRolePlayBoard('casual');
+        } else if (index == 3) {
+            setRolePlayBoard('survival');
+        }
+    });
 
+    $("#home").click(() => {
+        resetAnswers();
+        setTimeout(() => {
+            chooseGame();
+        }, 100);
+    });
 }
 
 function resetAnswers() {
@@ -266,8 +357,6 @@ function resetAnswers() {
         item.answerGiven = [];
         item.score = 0;
     });
-
-    chooseGame();
 }
 
 function logAnswers(movies, chosenMovie, index) {
@@ -287,9 +376,12 @@ function logAnswers(movies, chosenMovie, index) {
                     setBestScores(index);
                     showLeaderboard(index);
                 } else if (index === 0) {
-                    setThreeOfAKindBoard(topScores[index].mode, false, false);
+                    setThreeOfAKindBoard(topScores[index].mode);
                 } else if (index === 2) {
-                    setRolePlayBoard(topScores[index].mode, false, false);
+                    if (currentGameSet.length < 10) {
+                        console.log("careful now")
+                    }
+                    setRolePlayBoard(topScores[index].mode);
                 } else console.log("Error: topScores Index neither 0 nor 2");
             }, 1000);
         });
@@ -306,9 +398,9 @@ function logAnswers(movies, chosenMovie, index) {
                     setBestScores(index);
                     showLeaderboard(index);
                 } else if (index === 0) {
-                    setThreeOfAKindBoard(topScores[index].mode, false, false);
+                    setThreeOfAKindBoard(topScores[index].mode);
                 } else if (index === 2) {
-                    setRolePlayBoard(topScores[index].mode, false, false);
+                    setRolePlayBoard(topScores[index].mode);
                 } else console.log("Error: topScores Index neither 0 nor 2");
             }, 1000);
         });
@@ -325,9 +417,9 @@ function logAnswers(movies, chosenMovie, index) {
                     setBestScores(index);
                     showLeaderboard(index);
                 } else if (index === 0) {
-                    setThreeOfAKindBoard(topScores[index].mode, false, false);
+                    setThreeOfAKindBoard(topScores[index].mode);
                 } else if (index === 2) {
-                    setRolePlayBoard(topScores[index].mode, false, false);
+                    setRolePlayBoard(topScores[index].mode);
                 } else console.log("Error: topScores Index neither 0 nor 2");
             }, 1000);
         });
@@ -341,9 +433,12 @@ function logAnswers(movies, chosenMovie, index) {
                 $(this).addClass("correct-answer");
                 setTimeout(() => {
                     if (index === 1) {
-                        setThreeOfAKindBoard(topScores[index].mode, false, false);
+                        setThreeOfAKindBoard(topScores[index].mode);
                     } else if (index === 3) {
-                        setRolePlayBoard(topScores[index].mode, false, false);
+                        if (currentGameSet.length < 10) {
+                            console.log("careful now")
+                        }
+                        setRolePlayBoard(topScores[index].mode);
                     } else console.log("Error: topScores Index neither 1 nor 3");
                 }, 1000);
             } else {
@@ -364,9 +459,12 @@ function logAnswers(movies, chosenMovie, index) {
                 $(this).addClass("correct-answer");
                 setTimeout(() => {
                     if (index === 1) {
-                        setThreeOfAKindBoard(topScores[index].mode, false, false);
+                        setThreeOfAKindBoard(topScores[index].mode);
                     } else if (index === 3) {
-                        setRolePlayBoard(topScores[index].mode, false, false);
+                        if (currentGameSet.length < 10) {
+                            console.log("careful now")
+                        }
+                        setRolePlayBoard(topScores[index].mode);
                     } else console.log("Error: topScores Index neither 1 nor 3");
                 }, 1000);
             } else {
@@ -386,9 +484,12 @@ function logAnswers(movies, chosenMovie, index) {
                 $(this).addClass("correct-answer");
                 setTimeout(() => {
                     if (index === 1) {
-                        setThreeOfAKindBoard(topScores[index].mode, false, false);
+                        setThreeOfAKindBoard(topScores[index].mode);
                     } else if (index === 3) {
-                        setRolePlayBoard(topScores[index].mode, false, false);
+                        if (currentGameSet.length < 10) {
+                            console.log("careful now")
+                        }
+                        setRolePlayBoard(topScores[index].mode);
                     } else console.log("Error: topScores Index neither 1 nor 3");
                 }, 1000);
             } else {
@@ -417,7 +518,7 @@ function setBestScores(index) {
 
 //-------------------------------------------------------3 OF A KIND GAME-----------------------------------------------------------
 
-function setThreeOfAKindBoard(gameMode, isFirstRound, isLastGo) {
+function setThreeOfAKindBoard(gameMode) {
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
                                                             <div class="row actors-row">
@@ -463,7 +564,7 @@ function playThreeOfAKindCasual() {
         // populate choice of actors for chosen movie
 
         actors = await getActors(chosenMovie);
-
+        console.log(actors);
         // set the game board
 
         await setActorsRow(actors);
@@ -472,8 +573,6 @@ function playThreeOfAKindCasual() {
 
         await logAnswers(movies, chosenMovie, 0);
     }, 100);
-
-
 
 }
 
@@ -485,6 +584,10 @@ function playThreeOfAKindSurvival() {
 
     currentGameSet = shuffleArray(currentGameSet);
     chosenMovie = currentGameSet.shift();
+
+    while (chosenMovie.castMembers.length < 3) {
+        chosenMovie = currentGameSet.shift();
+    }
     console.log("currentgameset:");
     console.log(currentGameSet);
     console.log("chosen Movie");
@@ -504,7 +607,7 @@ function playThreeOfAKindSurvival() {
     setTimeout(async() => {
         // populate choice of actors for chosen movie
         actors = await getActors(chosenMovie);
-
+        console.log(actors);
         // set the game board    
 
         await setActorsRow(actors);
@@ -524,11 +627,11 @@ function getActors(movie) {
 
 //-------------------------------------------------------ROLE PLAY GAME-----------------------------------------------------------
 
-function setRolePlayBoard(gameMode, isFirstRound, isLastGo) {
+function setRolePlayBoard(gameMode) {
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
                                                             <div class="row character-row">                                        
-                                                                <div id="chosen-character" class="col-8 movie-character"></div>
+                                                                <div id="chosen-character" class="movie-character"></div>
                                                             </div>
                                                             <div id="movies-row" class="row movies-row">
                                                             </div>
