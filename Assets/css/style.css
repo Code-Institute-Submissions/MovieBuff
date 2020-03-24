@@ -273,12 +273,12 @@ body {
 
 .trophy {
     display: flex;
-    justify-content: center;
 }
 
 .trophy>img {
     position: absolute;
     bottom: -50px;
+    right: 40%;
     height: 100%;
     transform: rotate(-10deg);
     margin: 0;
