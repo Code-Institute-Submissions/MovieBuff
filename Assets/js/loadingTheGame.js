@@ -135,7 +135,7 @@ async function loadGame() {
                                                             </div>`;
 
         setTimeout(() => {
-            console.log(`MostPop Length: ${mostPopular.length}`);
+            console.log(gameData);
             chooseGame();
         }, 3000);
     }, 2000);

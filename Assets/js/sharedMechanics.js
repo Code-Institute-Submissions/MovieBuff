@@ -24,13 +24,13 @@ function shuffleArray(arrayToShuffle) {
 function setMovieRow(movies) {
     movies = shuffleArray(movies);
     document.getElementById("movies-row").innerHTML =
-        `<div id="${movies[0].movieID}" class="col-4 movies movie-1">
+        `<div id="${movies[0].movieID}" class="col-12 col-md-4 movies movie-1">
                 <img id="movie-${movies[0].movieID}" src="https://image.tmdb.org/t/p/w500/${movies[0].moviePoster}" width=100%>
             </div>
-            <div id="${movies[1].movieID}" class="col-4 movies">
+            <div id="${movies[1].movieID}" class="col-12 col-md-4 movies">
                 <img id="movie-${movies[1].movieID}" src="https://image.tmdb.org/t/p/w500/${movies[1].moviePoster}" width=100%>
             </div>
-            <div id="${movies[2].movieID}" class="col-4 movies movie-3">
+            <div id="${movies[2].movieID}" class="col-12 col-md-4 movies movie-3">
                 <img id="movie-${movies[2].movieID}" src="https://image.tmdb.org/t/p/w500/${movies[2].moviePoster}" width=100%>
             </div> `;
 

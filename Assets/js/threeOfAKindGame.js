@@ -13,7 +13,6 @@ function setThreeOfAKindBoard(gameMode) {
                                                             </div>
                                                             <div id="movies-row" class="row movies-row">
                                                             </div>
-
                                                         </div>`;
 
     if (gameMode == "casual") {

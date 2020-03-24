@@ -29,11 +29,10 @@ function chooseGame() {
     $("#roleplay").mouseleave(() => {
         $("#roleplay").popover('hide');
     });
-    $("#roleplay").click(() => {
+    $("#roleplay").on('click', () => {
         $("#roleplay").popover('hide');
         chooseGameMode('RolePlay');
     });
-
 
 }
 
@@ -85,7 +84,7 @@ function chooseGameMode(gameType) {
     $("#survivalMode").mouseleave(() => {
         $("#survivalMode").popover('hide');
     });
-    $("#survivalMode").click(() => {
+    $("#survivalMode").on('click', () => {
         $("#survivalMode").popover('hide');
         if (gameType == "ThreeOfAKind") {
             currentGameSet = [...gameData];
@@ -99,7 +98,7 @@ function chooseGameMode(gameType) {
 
 function showLeaderboard(index) {
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 leaderboard-container">
-    <div class="col-6 left-column trophy"><img src="Assets/Media/goldenglobesmall.png"></div>
+    <div class="d-none d-md-block col-md-6 left-column trophy"><img src="Assets/Media/goldenglobesmall.png"></div>
     <div class="row right-row current-score">
         <div id="you" class="col-7">YOU GOT</div>
         <div id="player-score" class="col-5">${topScores[index].score}</div>
