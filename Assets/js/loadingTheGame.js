@@ -135,11 +135,47 @@ async function loadGame() {
                                                             </div>`;
 
         setTimeout(() => {
-            console.log(gameData);
             chooseGame();
-        }, 3000);
+        }, 2500);
     }, 2000);
 
 }
 
-loadGame();
+$(document).ready(() => {
+
+    //show disclaimer if in portrait view on mobile device, otherwise just load
+    var screenWidth = $(window).width();
+    var screenHeight = $(window).height();
+    var isFirstLoad = true;
+
+    if (screenWidth < screenHeight) {
+        document.getElementById("gameWindow").innerHTML = `<div class="col-12 rotate">
+                                                                <img src="Assets/Media/rotate.png" alt="Please rotate the screen">
+                                                            </div>
+                                                            <div class="col-12 disclaimer">
+                                                            <p> This game is optimised for landscape view.</p>
+                                                            <p> I recommend switching to landscape view before continuing!</p>
+                                                            </div>
+                                                            <div class="col-12 rotate">
+                                                                <button id="onwards" class="btn btn-success">Onwards!</button>
+                                                            </div>`;
+
+        $(window).on('orientationchange', () => {
+            screenWidth = $(window).innerHeight();
+            screenHeight = $(window).innerWidth();
+
+            if (screenWidth > screenHeight && isFirstLoad) {
+                isFirstLoad = false;
+                loadGame();
+            }
+
+        })
+
+
+        $('#onwards').on('click', () => {
+            isFirstLoad = false;
+            loadGame();
+        })
+
+    } else loadGame();
+});

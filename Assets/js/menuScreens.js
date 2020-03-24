@@ -2,15 +2,23 @@
 
 //--------------------------------------Choose Game and Mode + Show Leaderboard----------------------------------------------
 function chooseGame() {
-    document.getElementById("titleRow").innerHTML = `
-                                                        <h1 id="title" class="headers">Movie Buff</h1>
-                                                        `;
+    var screenWidth = $(window).innerWidth();
+    var lpp = "bottom"; //leftPopoverPlacment
+
+    if (screenWidth < 768) {
+        lpp = "top";
+    }
+    document.getElementById("titleRow").innerHTML = `<h1 id="title" class="headers">Movie Buff</h1>`;
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
-                                                                    <button id="threeofakind" data-toggle="popover" data-content="${games[0].description}" data-placement="bottom" class="btn btn-success special-elite-font">3 of a Kind</button>
-                                                                    <button id="roleplay" data-toggle="popover" data-content="${games[1].description}" data-placement="bottom" class="btn btn-success special-elite-font">Role Play</button>
-                                                                </div>`;
+                                                            <button id="threeofakind" data-toggle="popover" data-content="${games[0].description}" data-placement="${lpp}" class="btn btn-success light-font">3 of a Kind</button>
+                                                            <button id="roleplay" data-toggle="popover" data-content="${games[1].description}" data-placement="bottom" class="btn btn-success light-font">Role Play</button>
+                                                        </div>`;
 
+    if (screenWidth < 768) {
+        $("#threeofakind").popover('show');
+        $("#roleplay").popover('show');
+    }
 
     $("#threeofakind").mouseenter(() => {
         $("#threeofakind").popover('show');
@@ -18,9 +26,10 @@ function chooseGame() {
     $("#threeofakind").mouseleave(() => {
         $("#threeofakind").popover('hide');
     });
-    $("#threeofakind").click(() => {
+    $("#threeofakind").on('click', () => {
         $("#threeofakind").popover('hide');
-        chooseGameMode('ThreeOfAKind');
+        $("#roleplay").popover('hide');
+        chooseGameMode('ThreeOfAKind', lpp);
     });
 
     $("#roleplay").mouseenter(() => {
@@ -30,16 +39,15 @@ function chooseGame() {
         $("#roleplay").popover('hide');
     });
     $("#roleplay").on('click', () => {
+        $("#threeofakind").popover('hide');
         $("#roleplay").popover('hide');
-        chooseGameMode('RolePlay');
+        chooseGameMode('RolePlay', lpp);
     });
-
 }
 
+function chooseGameMode(gameType, lpp) {
 
-
-function chooseGameMode(gameType) {
-
+    //Display the chosen game type title
     var thisGame;
 
     games.forEach((item) => {
@@ -51,8 +59,9 @@ function chooseGameMode(gameType) {
                                                         <h2 class="game-title">${thisGame.title}</h2> 
                                                     </div>`;
 
+    //Display game mode options
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
-                                                            <button id="casualMode" data-toggle="popover" data-content="${games[2].casualMode}" data-placement="bottom" class="btn btn-success light-font">Casual</button>
+                                                            <button id="casualMode" data-toggle="popover" data-content="${games[2].casualMode}" data-placement="${lpp}" class="btn btn-success light-font">Casual</button>
                                                             <button id="survivalMode" data-toggle="popover" data-content="${games[2].survivalMode}" data-placement="bottom" class="btn btn-success light-font">Survival</button>
                                                             <button id="back" class="btn btn-success light-font">Exit</button>
                                                             </div>`;
@@ -61,14 +70,20 @@ function chooseGameMode(gameType) {
         chooseGame();
     });
 
+    if ($(window).innerWidth() < 768) {
+        $("#casualMode").popover('show');
+        $("#survivalMode").popover('show');
+    }
+
     $("#casualMode").mouseenter(() => {
         $("#casualMode").popover('show');
     });
     $("#casualMode").mouseleave(() => {
         $("#casualMode").popover('hide');
     });
-    $("#casualMode").click(() => {
+    $("#casualMode").on('click', () => {
         $("#casualMode").popover('hide');
+        $("#survivalMode").popover('hide');
         if (gameType == "ThreeOfAKind") {
             currentGameSet = [...gameData];
             setThreeOfAKindBoard('casual');
@@ -85,6 +100,7 @@ function chooseGameMode(gameType) {
         $("#survivalMode").popover('hide');
     });
     $("#survivalMode").on('click', () => {
+        $("#casualMode").popover('hide');
         $("#survivalMode").popover('hide');
         if (gameType == "ThreeOfAKind") {
             currentGameSet = [...gameData];

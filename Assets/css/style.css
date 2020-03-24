@@ -37,6 +37,45 @@ body {
     font-family: 'Special Elite', sans-serif;
 }
 
+.rotate {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    font-family: 'Bungee Inline', cursive;
+    color: rgb(174, 203, 214);
+}
+
+.rotate>img {
+    width: 60%;
+    animation: rotateImg 1200ms linear 0s alternate infinite;
+}
+
+@keyframes rotateImg {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(-90deg);
+    }
+}
+
+.rotate>button {
+    padding: 1%;
+}
+
+.disclaimer {
+    position: relative;
+}
+
+.disclaimer>p {
+    text-align: center;
+    font-family: 'Bungee Inline', cursive;
+    color: rgb(174, 203, 214);
+    font-size: 1.5em;
+}
+
 .headers {
     color: rgb(174, 203, 214);
     font-family: 'Monoton', cursive;
@@ -51,7 +90,7 @@ body {
 
 .light-font {
     font-family: 'Special Elite', sans-serif;
-    color: rgb(174, 203, 214);
+    color: rgb(207, 234, 245);
 }
 
 .title-wrapper {
@@ -425,6 +464,12 @@ body {
         left: 0;
         width: 100%;
     }
+    .popover-body {
+        font-size: 0.8em;
+    }
+    .popover>.arrow::after {
+        border-top-color: rgb(174, 203, 214);
+    }
 }
 
 @media screen and (max-width: 500px) {
@@ -442,5 +487,34 @@ body {
 @media screen and (max-width: 425px) {
     .game-title {
         font-size: 2.5em;
+    }
+}
+
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .game-title {
+        font-size: 2.5em;
+    }
+    .headers {
+        font-size: 1.9em;
+    }
+    .characters {
+        font-size: 1.1em;
+        margin-bottom: 3px;
+    }
+    .actors>img,
+    .movies>img {
+        width: 70%;
+    }
+    #you {
+        font-size: 2em;
+    }
+    #player-score {
+        font-size: 4em;
+    }
+    .leaderboard-scores {
+        font-size: 1.2em;
+    }
+    .headers {
+        font-size: 1.75em;
     }
 }
