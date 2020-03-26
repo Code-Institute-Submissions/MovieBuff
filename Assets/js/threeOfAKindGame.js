@@ -5,7 +5,9 @@
 
 function setThreeOfAKindBoard(gameMode) {
 
-    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 x-button"><span id="exit" class="fas fa-times-circle fa-2x exit-button"></span>
+                                                        </div>
+    <div class="col-12 game-window">
                                                             <div class="row actors-row">
                                                                 <div id="actor-1" class="col-4 actors"></div>
                                                                 <div id="actor-2" class="col-4 actors"></div>
@@ -20,6 +22,11 @@ function setThreeOfAKindBoard(gameMode) {
     } else if (gameMode == "survival") {
         playThreeOfAKindSurvival();
     }
+
+    $("#exit").on('click', () => {
+        resetAnswers();
+        chooseGame();
+    })
 }
 
 function playThreeOfAKindCasual() {

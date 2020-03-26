@@ -201,3 +201,8 @@ function resetAnswers() {
         item.score = 0;
     });
 }
+
+$("#exit").on('click', () => {
+    resetAnswers();
+    chooseGame();
+})

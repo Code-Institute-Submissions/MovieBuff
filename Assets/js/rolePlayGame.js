@@ -4,7 +4,10 @@
 
 function setRolePlayBoard(gameMode) {
 
-    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-window">
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 x-button">
+                                                            <span id="exit" class="fas fa-times-circle fa-2x exit-button"></span>
+                                                        </div>
+                                                        <div class="col-12 game-window">
                                                             <div class="row character-row">                                        
                                                                 <div id="chosen-character" class="movie-character"></div>
                                                             </div>
@@ -18,6 +21,11 @@ function setRolePlayBoard(gameMode) {
     } else if (gameMode == "survival") {
         playRolePlaySurvival();
     }
+
+    $("#exit").on('click', () => {
+        resetAnswers();
+        chooseGame();
+    })
 }
 
 async function playRolePlayCasual() {

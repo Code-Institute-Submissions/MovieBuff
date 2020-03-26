@@ -201,6 +201,26 @@ body {
     border-bottom-color: rgb(174, 203, 214);
 }
 
+.x-button {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 5%;
+}
+
+.exit-button {
+    color: rgb(10, 126, 10);
+    top: 0;
+    right: 0;
+    box-sizing: border-box;
+    float: right;
+}
+
+.exit-button:hover {
+    color: rgb(121, 248, 121);
+    transform: scale(1.1);
+}
+
 
 /* -------------------------------- Leaderboard -------------------------------- */
 
