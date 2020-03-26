@@ -2,6 +2,10 @@
 
 //-------------------------------------------------------ROLE PLAY GAME-----------------------------------------------------------
 
+/**
+ * Readies the game board for the RolePlay game type
+ * @param {string} gameMode The game mode selected by the user. Values: either 'casual' or 'survival'
+ */
 function setRolePlayBoard(gameMode) {
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 x-button">
@@ -27,6 +31,11 @@ function setRolePlayBoard(gameMode) {
         chooseGame();
     })
 }
+
+/**
+ * Sets up the game board in casual mode
+ * Choses the correct answer and populates the 2 wrong answers
+ */
 
 async function playRolePlayCasual() {
 
@@ -68,6 +77,11 @@ async function playRolePlayCasual() {
     await logAnswers(movies, chosenMovie, 2);
 
 }
+
+/**
+ * Sets up the game board in survival mode
+ * Choses the correct answer and populates the 2 wrong answers
+ */
 
 async function playRolePlaySurvival() {
 

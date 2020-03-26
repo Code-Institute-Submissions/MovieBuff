@@ -1,10 +1,16 @@
 //Movie Buff Game by MllrB
 //------------------------------Game Variables------------------------------------
 
+/** Holds the data that drives the ThreeOfAKind game */
 const gameData = [];
+
+/** Holds the data that drives the RolePlay game */
 const mostPopular = [];
+
+/** A copy of the game data for the current game/round  */
 var currentGameSet = [];
 
+/** Strings for populating game titles, descriptions and rules */
 const games = [{
         name: "ThreeOfAKind",
         title: "3 of a Kind",
@@ -21,11 +27,21 @@ const games = [{
     }
 ];
 
+/** Holds the top scores for each game type and mode
+ * The index of this array also controls additions to the leaderboard and
+ * game behaviour - which game board to set after logging an answer
+ */
+
 const topScores = [new Answers("ThreeOfAKind", "casual"),
     new Answers("ThreeOfAKind", "survival"),
     new Answers("RolePlay", "casual"),
     new Answers("RolePlay", "survival"),
 ];
+
+/** The objects that populate the topScores[]  
+ * @param {string}  game        Game type 
+ * @param {string}  gameMode    Game mode 
+ */
 
 function Answers(game, gameMode) {
     this.gameName = game;
@@ -35,6 +51,15 @@ function Answers(game, gameMode) {
     this.score = 0;
     this.bestScores = [0, 0, 0];
 }
+
+/** The objects that populate the gameData[] and the mostPopular[] 
+ * @param {number}  filmID      The Movie DB movieID value
+ * @param {string}  title       The Movie DB original_title
+ * @param {string}  poster      The Movie DB movie poster image path
+ * @param {number}  popular     The Movie DB popularity rating
+ * @param {string}  blurb       The Movie DB movie synopsis
+ * @param {number}  date        The Movie DB movie release date reduced to just the year
+ */
 
 function MovieData(filmID, title, poster, popular, blurb, date) {
     this.movieID = filmID;
@@ -46,6 +71,12 @@ function MovieData(filmID, title, poster, popular, blurb, date) {
     this.castMembers = [];
 }
 
+/** The object that populates a movieData object's castMembers property
+ * @param {number}  num         The Movie DB actorID
+ * @param {string}  name        The Movie DB actor name
+ * @param {string}  charName    The Movie DB character name
+ * @param {number}  profilePic  The Movie DB actor image path
+ */
 function ActorData(num, name, charName, profilePic) {
     this.actorID = num;
     this.actorName = name;
@@ -56,7 +87,11 @@ function ActorData(num, name, charName, profilePic) {
 
 //------------------------------Game Loading Functions------------------------------------
 
-
+/**
+ * Gets and parses a page of movies from the API
+ * @param {number} pageNumber   The page number you want to fetch from the API
+ * @returns {object}            The page fetched from the API
+ */
 async function fetchTopRatedMovies(pageNumber) {
 
     var initialList = await fetch(`https://api.themoviedb.org/3/movie/top_rated?page=${pageNumber}&api_key=86bde198d570a8a05979302fb3be8b11`);
@@ -65,6 +100,12 @@ async function fetchTopRatedMovies(pageNumber) {
     return listToReturn;
 }
 
+/**
+ * Gets and parses the cast and crew for a movie from the API
+ * @param {number} movieID   The movieID for the cast and crew to fetch from the API
+ * @returns {Array}         Only the cast[] for the movieID passed
+ */
+
 async function fetchMovieCast(movieID) {
     var castData = await fetch(`https://api.themoviedb.org/3/movie/${movieID}/credits?api_key=86bde198d570a8a05979302fb3be8b11`);
     var castAndCrew = await castData.json();
@@ -72,6 +113,10 @@ async function fetchMovieCast(movieID) {
     return castAndCrew.cast;
 }
 
+/**
+ * Populates the gameData[] with a page worth of movieData objects
+ * @param {Array} topRatedList   The array of movies to add to the gameData[]
+ */
 
 function populateGameData(topRatedList) {
     topRatedList.forEach((item) => {
@@ -96,14 +141,26 @@ function populateGameData(topRatedList) {
     });
 }
 
+/**
+ * Populates the the castMember property of a movieData object
+ * @param {object}  movieObject     The movieData object onto which to add cast members
+ * @param {Array}   cast            The cast of actors with which to populate the movieData object
+ */
+
 function populateCastMembers(movieObject, cast) {
-    cast.forEach((item, index, array) => {
+    cast.forEach((item) => {
         if (item.profile_path != null) {
             var actor = new ActorData(item.id, item.name, item.character, item.profile_path);
             movieObject.castMembers.push(actor);
         }
     });
 }
+
+
+/**
+ * Calls the functions necessary to load the game in sequence
+ * Allows 2.5 seconds to acknowledge The MovieDB
+ */
 
 async function loadGame() {
     document.getElementById("gameWindow").innerHTML = `<img src="Assets/Media/3GFW2.gif" alt="loading">`;
@@ -141,6 +198,13 @@ async function loadGame() {
 
 }
 
+/**
+ * Checks the screen dimensions 
+ * If the width is less than the height 
+ * Then assume mobile device and encourage the user to switch to landscape view
+ * 
+ * Finally - calls the load game function
+ */
 $(document).ready(() => {
 
     //show disclaimer if in portrait view on mobile device, otherwise just load

@@ -56,7 +56,7 @@ I approached this project with a view to improving my knowledge of retrieving da
         * Survival: The player has only one life. The game ends with the first incorrect answer and the aim is to score as high as possible.
 
 3. As a user I would like varying degrees of difficulty
-    * I would have liked to offer various difficulty levels via a selectable option, however, this would require much more data processing which would lead to a longer loading time and besides for which, difficulty in this game is quite subjective as each player's movie knowledge will differ. Also, in order to achieve that, my own movie knowledge would need to be significantly better than it is! Having played through the game numerous times while testing, I think a difficulty gradient is aachieved given that the Role Play game type is more difficult and requires greater movie knowledge than the 3 of a Kind game type, that said, in most cases the questions posed are not too difficult as the player can chose the correct answer by process of elimination. Initially the Role Play game difficulty was quite high so in order to reduce the difficulty I implemented a separate data set that omits movies below a certain popularity level and of those only includes the movies with a release date after 1970.
+    * I would have liked to offer various difficulty levels via a selectable option, however, this would require much more data processing which would lead to a longer loading time and besides for which, difficulty in this game is quite subjective as each player's movie knowledge will differ. Also, in order to achieve that, my own movie knowledge would need to be significantly better than it is! Having played through the game numerous times while testing, I think a difficulty gradient is achieved given that the Role Play game type is more difficult and requires greater movie knowledge than the 3 of a Kind game type, that said, in most cases the questions posed are not too difficult as the player can chose the correct answer by process of elimination. Initially the Role Play game difficulty was quite high so in order to reduce the difficulty I implemented a separate data set that omits movies below a certain popularity level and of those only includes the movies with a release date after 1970.
 
 4. As a user I would like to shown my score at the end of each game and where that score ranks against previous attempts
     * A current score and leaderboard is displayed at the end of every round for each game type and mode.
@@ -142,6 +142,7 @@ Should you wish to clone this repository you can do so by:
 
 #### Mllrb.com Deployment 
 - [mllrb.com/MovieBuff](http://mllrb.com/MovieBuff/index.html) 
+
 After purchasing the domain from letshost.ie I gained access to their cPanel via the services menu. From here I opened their file manager which allowed me to create the various folders associated with the site.
 
 Folders: 

@@ -3,6 +3,10 @@
 
 //-------------------------------------------------------3 OF A KIND GAME-----------------------------------------------------------
 
+/**
+ * Readies the game board for the ThreeOfAKind game type
+ * @param {string} gameMode The game mode selected by the user. Values: either 'casual' or 'survival'
+ */
 function setThreeOfAKindBoard(gameMode) {
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 x-button">
@@ -30,6 +34,11 @@ function setThreeOfAKindBoard(gameMode) {
     })
 }
 
+/**
+ * Sets up the game board in casual mode
+ * Choses the correct answer and populates the 2 wrong answers
+ */
+
 function playThreeOfAKindCasual() {
     console.log("three of a kind casual");
 
@@ -56,7 +65,6 @@ function playThreeOfAKindCasual() {
         // populate choice of actors for chosen movie
 
         actors = await getActors(chosenMovie);
-        console.log(actors);
         // set the game board
 
         await setActorsRow(actors);
@@ -67,6 +75,11 @@ function playThreeOfAKindCasual() {
     }, 100);
 
 }
+
+/**
+ * Sets up the game board in survival mode
+ * Choses the correct answer and populates the 2 wrong answers
+ */
 
 function playThreeOfAKindSurvival() {
 
@@ -80,10 +93,6 @@ function playThreeOfAKindSurvival() {
     while (chosenMovie.castMembers.length < 3) {
         chosenMovie = currentGameSet.shift();
     }
-    console.log("currentgameset:");
-    console.log(currentGameSet);
-    console.log("chosen Movie");
-    console.log(chosenMovie);
 
     //set choice of 3 movies including the correct answer
     movies[0] = chosenMovie;

@@ -1,13 +1,19 @@
 //Movie Buff Game by MllrB
 
 //--------------------------------------Choose Game and Mode + Show Leaderboard----------------------------------------------
+
+/**
+ * Displays the game type options
+ */
 function chooseGame() {
+
     var screenWidth = $(window).innerWidth();
     var lpp = "bottom"; //leftPopoverPlacment
 
     if (screenWidth < 768) {
         lpp = "top";
     }
+
     document.getElementById("titleRow").innerHTML = `<h1 id="title" class="headers">Movie Buff</h1>`;
 
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
@@ -45,6 +51,13 @@ function chooseGame() {
     });
 }
 
+/**
+ * Displays the game mode options
+ * @param {string} gameType 'ThreeOfAKind' or 'RolePlay'
+ * @param {string} lpp      lpp stands for Left Popover Position, values: either 'top' or 'bottom'
+ *                          determines the position of the tooltip for the left button
+ */
+
 function chooseGameMode(gameType, lpp) {
 
     //Display the chosen game type title
@@ -60,16 +73,19 @@ function chooseGameMode(gameType, lpp) {
                                                     </div>`;
 
     //Display game mode options
-    document.getElementById("gameWindow").innerHTML = `<div class="col-12 game-types">
+    document.getElementById("gameWindow").innerHTML = `<div class="col-12 x-button">
+                                                            <span id="back" class="fas fa-arrow-alt-circle-left fa-2x back-button"></span>
+                                                        </div>
+                                                        <div class="col-12 game-types">
                                                             <button id="casualMode" data-toggle="popover" data-content="${games[2].casualMode}" data-placement="${lpp}" class="btn btn-success light-font">Casual</button>
                                                             <button id="survivalMode" data-toggle="popover" data-content="${games[2].survivalMode}" data-placement="bottom" class="btn btn-success light-font">Survival</button>
-                                                            <button id="back" class="btn btn-success light-font">Exit</button>
-                                                            </div>`;
+                                                        </div>`;
 
     $("#back").on('click', () => {
         chooseGame();
     });
 
+    // if being displayed on a mobile device, then show tooltips by default - no mouseover necessary
     if ($(window).innerWidth() < 768) {
         $("#casualMode").popover('show');
         $("#survivalMode").popover('show');
@@ -112,9 +128,16 @@ function chooseGameMode(gameType, lpp) {
     });
 }
 
+/**
+ * Displays the game leaderboard and waits for input from the player
+ * @param {number} index The topScores[] index that denotes the game type and mode
+ */
+
 function showLeaderboard(index) {
     document.getElementById("gameWindow").innerHTML = `<div class="col-12 leaderboard-container">
-    <div class="d-none d-md-block col-md-6 left-column trophy"><img src="Assets/Media/goldenglobesmall.png"></div>
+    <div class="d-none d-md-block col-md-6 left-column trophy">
+        <img src="Assets/Media/goldenglobesmall.png">
+    </div>
     <div class="row right-row current-score">
         <div id="you" class="col-7">YOU GOT</div>
         <div id="player-score" class="col-5">${topScores[index].score}</div>

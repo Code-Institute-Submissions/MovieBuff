@@ -2,10 +2,10 @@
 ## Tests Documentation
 - [Styling Testing](#Styling-Testing)
 - [Application Testing](#Application-Testing)
-    -[Global Variables](#Global-Variables)
-    -[Loading the game:](#Loading-the-game:)
-    -[The Game](#The-Game)
-    -[Bugs encountered](#Bugs-encountered)
+    - [Global Variables](#Global-Variables)
+    - [Loading the game:](#Loading-the-game:)
+    - [The Game](#The-Game)
+    - [Bugs encountered](#Bugs-encountered)
 
 ### Styling Testing
 

@@ -1,7 +1,12 @@
 //Movie Buff Game by MllrB
 
 //-----------------------------Mechanics for the Role Play Game--------------------------------
-
+/**
+ * Selects the 3 characters for the movie chosen as the correct answer
+ * Removes '(voice)' from character names that have it
+ * @param {object} movie The chosen movie/correct answer
+ * @returns {Array}      The three characters for the chosen movie
+ */
 function getCharacters(movie) {
 
     var characterNames = [];
@@ -23,6 +28,13 @@ function getCharacters(movie) {
     return characterNames;
 
 }
+
+/**
+ * Checks to see if the character name is in the movie title
+ * @param {object} movie        The chosen movie/correct answer
+ * @param {Array}  characters   The three characters for the chosen movie
+ * @returns {boolean}           True/False depending on if the character name is in the movie title
+ */
 
 function isCharNameInMovieTitle(movie, characters) {
     var isIt = false;
