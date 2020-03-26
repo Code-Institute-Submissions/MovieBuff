@@ -14,7 +14,8 @@ _//This game was developed purely for personal educational purposes_
 ![alt text](http://mllrb.com/MovieBuff/Assets/Media/3GFW-readme.gif "Movie Buff Preview")
 
 ## Contents
-- UX
+- [UX](#UX)
+
 - Testing
 - Deployment
 - Acknowledgements
@@ -115,7 +116,7 @@ This project has been deployed both on GitHub Pages and on my personal domain.
 First, I navigated to my [MovieBuff Repository](https://github.com/MllrB/MovieBuff) on the GitHub site.
 The default tab selected is the Code tab so from here I selected the Settings tab. I scrolled down the page until I came to the "GitHub Pages" section from where I selected Master Branch as the source. I left the Theme Chooser empty. 
 
-_Note: Although I own a custom domain, owing to the time constraints on the completion of this project and my current ignorance of the process, I decided against serving my custom domain from GitHub Pages. This is something I intend to rectify when time is not against me._
+_Note: Although I own a custom domain, owing to the time constraints for the completion of this project and my current ignorance of the process, I decided against serving my custom domain from GitHub Pages. This is something I intend to rectify when time is not against me._
 
 #### Cloning my MovieBuff Repository
 Should you wish to clone this repository you can do so by:
