@@ -1,5 +1,11 @@
 # MLLRB MovieBuff Game
 ## Tests Documentation
+- [Styling Testing](#Styling-Testing)
+- [Application Testing](#Application-Testing)
+    -[Global Variables](#Global-Variables)
+    -[Loading the game:](#Loading-the-game:)
+    -[The Game](#The-Game)
+    -[Bugs encountered](#Bugs-encountered)
 
 ### Styling Testing
 
@@ -81,4 +87,7 @@ The first bug I attempted to fix was less a bug, more an artifact of the data. S
 
 The next bugs I encountered and fixed were very similar to each other but concerned both game types. For the 3 of a kind game, when a movie was chosen that had less than three valid actors (actors with an image path assosciated) the game would crash or not display any actors. Similarly, if during the rolePlay game, the chosen movie had less than 3 valid characters (this is also dependant on the actors with a valid image path) the game would also crash.
 To fix this I implemented a condition that would force a different movie to be chosen if the movie had less than 3 valid actors or characters depending on the relevant game type. I am reasonably certain my fix has worked but due to the chance nature of the movie selection and my current inability to automate the testing for this I can't be 100% sure.
+
+
+### [Back To readme.md](readme.md)
 

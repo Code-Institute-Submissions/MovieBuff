@@ -15,10 +15,22 @@ _//This game was developed purely for personal educational purposes_
 
 ## Contents
 - [UX](#UX)
-
-- Testing
-- Deployment
-- Acknowledgements
+    - [Project Goals](#Project-Goals)
+    - [My Goals](#My-Goals)
+    - [User Stories](#User-Stories)
+    - [Design Choices](#Design-Choices)
+    - [Fonts](#Fonts)
+- [Wireframes](#Wireframes)
+- [Technologies Used](#Technologies-Used)
+    - [Languages](#Languages)
+    - [Libraries/Tools](#Libraries/Tools)
+    - [Applications](#Applications)
+- [Testing and Bugs](#Testing-and-Bugs)
+- [Deployment](#Deployment)
+    - [GitHub Deployment](#GitHub-Deployment)
+    - [Cloning my MovieBuff Repository](#Cloning-my-MovieBuff-Repository)
+    - [Mllrb.com Deployment](#Mllrb.com-Deployment)
+- [Acknowledgements](#Acknowledgements)
 
 ## UX
 
@@ -74,6 +86,12 @@ My choice of fonts were made with the movie industry in mind.
 * Leaderboard Scores: [Google Fonts: Bungee Inline](https://fonts.google.com/specimen/Bungee+Inline)
     * I feel that this font falls somewhere between the movie and game styles and is complimentary to the Monoton font used for the titles. For this reason I used it only for the leaderboard.
 
+## Wireframes
+I first scribbled out my basic idea on paper and then used Microsoft Powerpoint to produce a digital version. [View the pdf version](Assets/Media/moviebuff-wireframes.pdf)
+
+The idea and design were always intended for a landscape viewing aspect and as such, rather than implementing a different design for mobile devices, I decided to implement a disclaimer prior to loading which encourages the user to switch to a landscape view and which would only display when the screen height is greater than it's width.
+
+For the most part, I stuck to the wireframe design with the exception of the leaderboard screen. Initially my design would only show the players score at the end of each game, however, as development progressed I decided that it was necessary and desirable to also show the current top scores.
 
 ## Technologies Used
 
@@ -97,13 +115,6 @@ My choice of fonts were made with the movie industry in mind.
 * MS Powerpoint
 * CPanel
 
-## Wireframes
-I first scribbled out my basic idea on paper and then used Microsoft Powerpoint to produce a digital version. [View the pdf version](Assets/Media/moviebuff-wireframes.pdf)
-
-The idea and design were always intended for a landscape viewing aspect and as such, rather than implementing a different design for mobile devices, I decided to implement a disclaimer prior to loading which encourages the user to switch to a landscape view and which would only display when the screen height is greater than it's width.
-
-For the most part, I stuck to the wireframe design with the exception of the leaderboard screen. Initially my design would only show the players score at the end of each game, however, as development progressed I decided that it was necessary and desirable to also show the current top scores.
-
 ## Testing and Bugs
 
 View the testing documentation in the [testing.md file](testing.md)
@@ -111,7 +122,8 @@ View the testing documentation in the [testing.md file](testing.md)
 ## Deployment
 This project has been deployed both on GitHub Pages and on my personal domain.
 
-#### GitHub Deployment - [GitHub Pages](https://mllrb.github.io/MovieBuff/index.html)
+#### GitHub Deployment 
+- [GitHub Pages Site](https://mllrb.github.io/MovieBuff/index.html)
 
 First, I navigated to my [MovieBuff Repository](https://github.com/MllrB/MovieBuff) on the GitHub site.
 The default tab selected is the Code tab so from here I selected the Settings tab. I scrolled down the page until I came to the "GitHub Pages" section from where I selected Master Branch as the source. I left the Theme Chooser empty. 
@@ -128,7 +140,8 @@ Should you wish to clone this repository you can do so by:
 6. Initialise Git for this folder by typing "git init"
 7. Type "git clone " followed by the URL you copied on step 3. It should look like this: `git clone https://github.com/MllrB/MovieBuff.git`
 
-#### Mllrb.com Deployment - [mllrb.com](http://mllrb.com/MovieBuff/index.html) 
+#### Mllrb.com Deployment 
+- [mllrb.com/MovieBuff](http://mllrb.com/MovieBuff/index.html) 
 After purchasing the domain from letshost.ie I gained access to their cPanel via the services menu. From here I opened their file manager which allowed me to create the various folders associated with the site.
 
 Folders: 
@@ -144,7 +157,7 @@ Once I had created these folders I uploaded the various application files into t
 
 For simplicity and to avoid creating any unnecessary bugs, the folder names & structure and file names contained within each folder are identical to that of my GitHub repository with the exception of the Jasmine folder, jasmine test files and jasmine.html file which I deemed unnecessary for this avenue of deployment.
 
-## Credits
+## Acknowledgements
 
 * All data powering the game is provided by [the Movie DB](https://www.themoviedb.org/)
 * The Movie DB logo also provided by [the Movie DB](https://www.themoviedb.org/)
@@ -158,7 +171,7 @@ For simplicity and to avoid creating any unnecessary bugs, the folder names & st
 
 ------------
 ## Finally...
-...if you got this far I really hope you enjoyed the game :)
+...I really hope you enjoyed the game :)
 
 
 
