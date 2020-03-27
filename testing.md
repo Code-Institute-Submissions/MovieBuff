@@ -1,9 +1,9 @@
 # MLLRB MovieBuff Game
-## Tests Documentation
+## Testing Documentation
 - [Styling Testing](#Styling-Testing)
 - [Application Testing](#Application-Testing)
     - [Global Variables](#Global-Variables)
-    - [Loading the game:](#Loading-the-game:)
+    - [Loading the game](#Loading-the-game)
     - [The Game](#The-Game)
         - [3 of a Kind Game, Casual Mode, Manual Tests](#3-of-a-Kind-Game,-Casual-Mode,-Manual-Tests)
         - [3 of a Kind Game, Survival Mode, Manual Tests](#3-of-a-Kind-Game,-Survival-Mode,-Manual-Tests)
@@ -16,13 +16,13 @@
 
 I used Google Chrome developer tools for the majority of the development process. 
 
-I encountered a few bugs along the way particularly with the image sizes for the actors and movies displayed. During initial development I had been viewing the application in a 1024px x 722px and initially styling the game for those dimensions, however, as I began widening the screen I noticed that the images would grow but not significantly enough to take up enough of the screen. Similarly, when on smaller screen sizes the images would become too small. This was as a result of how they were being displayed via the HTML img tag as opposed to a background image of a div which in itself was a decision to get around the div sizes distorting the images and also as a result of the overall image aspect being governed by the width. To get around this I tried to make them bigger for at the smaller screen sizes by allowing the width to be 100%, however, because the height of the images is restricted, this would cause the image aspect ration to distort as I widened the screen. The only fix I could implement was by implementing various media breaks to govern the actor/movie image widths for differing screen size.
+I encountered a few bugs along the way particularly with the image sizes for the actors and movies displayed. During initial development I had been viewing the application in a 1024px by 722px aspect and initially styling the game for those dimensions. As I began widening the screen I noticed that the images would grow but not significantly enough to take up enough of the screen. Similarly, when viewed on smaller screen sizes the images would become too small. This was as a result of how they were being displayed via the HTML img tag as opposed to a background image of a div which in itself was a decision to get around the div sizes distorting the images and also as a result of the overall image aspect being governed by the width property. To get around this I tried to make them bigger for the smaller screen sizes by allowing the width to be 100%, however, because the height of the images is restricted, this would cause the image aspect ratio to distort as I widened the screen. The only fix I could action was to implement various media breaks to govern the actor/movie image widths for differing screen sizes.
 
 Implementing these media breaks also became useful for changing the font-size for the character names, game titles, headings and leaderboard. If left to the bootstrap grid system, these would overflow and overlap each other.
 
-While testing the styling I also noticed that the trophy image for the leaderboard took up too much real estate on the smaller screen sizes so I decided not to display it on the smaller screen sizes which in turn allowed me to re-style the leaderboard screen for those smaller screen sizes.
+While testing the styling I also noticed that the trophy image for the leaderboard took up too much real estate on the smaller screen sizes so I decided not to display it on the smaller screen sizes. This in turn allowed me to re-style the leaderboard screen for those smaller screen sizes.
 
-A bug still exists when displaying some images. Most of the images share a consistent aspect ratio, however, there are some images that are slightly shorter in height. This comes directly from the data retrieved from the Movie DB and is apparent only becuase of my decision to display the images using the HTML img tag rather than setting the background-image and background-size of a div. I am yet to find a good solution to fixing this bug but I consider this an acceptable compromise in order to avoid the bugs I was encountering trying to dynamically set css properties of divs.
+A bug still exists when displaying some images. Most of the images share a consistent aspect ratio, however, there are some images that are slightly shorter in height. This comes directly from the data retrieved from the Movie DB and is apparent only becuase of my decision to display the images using the HTML img tag rather than setting the background-image and background-size of a div. I am yet to find a good solution to fixing this bug but I consider this an acceptable compromise in order to avoid the problems I was encountering when trying to dynamically set css width and height properties of divs.
 
 For desktop devices, I have tested the styling and responsivity on Google Chrome, Mozilla Firefox, Microsoft Edge and Opera browsers and am happy that the site's behaviour is consistent across them all. 
 
@@ -53,7 +53,7 @@ I tested the following variables by logging to the console at various stages of 
     * Each actorData has an ID, a name, a character name and a poster path
 
 
-#### Loading the game: 
+#### Loading the game 
 
 Being the part of the application that everything else is hinged on, I tested the loading sequence extensively during the development of the application by logging the results of each step to the console and examining the results manually making improvements where necessary. I also attempted to write some automated tests for the loading sequence.
 These automated tests can be found in the Jasmine folder in the testLoadingTheGame.js file:
@@ -621,7 +621,7 @@ I am satisfied that:
 The first bug I attempted to fix was less a bug, more an artifact of the data. Some of the character names were displaying with "(voice)" after the character name which didn't look great but also indicated that the correct answer was an animated film. This is corrected by getCharacters() in the rolePlayMechanics.js file.
 
 The next bugs I encountered and fixed were very similar to each other but concerned both game types. For the 3 of a kind game, when a movie was chosen that had less than three valid actors (actors with an image path assosciated) the game would crash or not display any actors. Similarly, if during the rolePlay game, the chosen movie had less than 3 valid characters (this is also dependant on the actors with a valid image path) the game would also crash.
-To fix this I implemented a condition that would force a different movie to be chosen if the movie had less than 3 valid actors or characters depending on the relevant game type. I am reasonably certain my fix has worked but due to the chance nature of the movie selection and my current inability to automate the testing for this I can't be 100% sure.
+To fix this I implemented a condition that would force a different movie to be chosen if the movie had less than 3 valid actors or characters depending on the relevant game type. I am reasonably certain my fix has worked but due to the chance nature of the movie selection and my current inability to automate the testing for this I can't be 100% sure. If you do encounter this bug, I recommend quiting the current game using the X icon in the top right corner. This will avoid resetting the leaderboard scores which will happen if you refresh the browser window.
 
 
 ### [Back To readme.md](readme.md)
